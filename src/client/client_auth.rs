@@ -8,7 +8,6 @@ use crate::{
 };
 
 use super::Client;
-
 impl Client {
     pub fn do_auth<S>(&mut self, stream: &mut S, digest: &mut Digest) -> SshResult<()>
     where
@@ -24,14 +23,20 @@ impl Client {
         loop {
             let mut data = Data::unpack(SecPacket::from_stream(stream, self)?)?;
             let message_code = data.get_u8();
+            // println!("[26]message_code >>>>>>>>>:{:#?}",message_code);
             match message_code {
                 ssh_msg_code::SSH_MSG_SERVICE_ACCEPT => {
+                    // log::info!("{:#?}",self.config);
+                    // println!("[30] message_code >>>>>>>>>:{:#?}",tried_public_key);
                     if self.config.auth.key_pair.is_none() {
                         tried_public_key = true;
                         // if no private key specified
                         // just try password auth
+                        // println!("[35] password>>>>>>>>>:{:#?}",tried_public_key);
+
                         self.password_authentication(stream)?
                     } else {
+                        // println!("[39] public>>>>>>>>>:{:#?}",tried_public_key);
                         // if private key was provided
                         // use public key auth first, then fallback to password auth
                         self.public_key_authentication(stream)?
@@ -48,7 +53,7 @@ impl Client {
                         self.password_authentication(stream)?
                     } else {
                         log::error!("user auth failure. (password)");
-                        return Err(SshError::from("user auth failure."));
+                        return Err(SshError::from("user auth failure.xxxx"));
                     }
                 }
                 ssh_msg_code::SSH_MSG_USERAUTH_PK_OK => {
@@ -92,6 +97,8 @@ impl Client {
         let data = {
             let pubkey_alg = &self.negotiated.public_key.0[0];
             log::info!("public key authentication. algorithm: {:?}", pubkey_alg);
+            log::info!("username: {:?}", self.config.auth.username);
+
             let mut data = Data::new();
             data.put_u8(ssh_msg_code::SSH_MSG_USERAUTH_REQUEST)
                 .put_str(self.config.auth.username.as_str())
@@ -108,6 +115,7 @@ impl Client {
                         .unwrap()
                         .get_blob(pubkey_alg),
                 );
+            log::info!("data: {:?}", data);
             data
         };
         data.pack(self).write_stream(stream)

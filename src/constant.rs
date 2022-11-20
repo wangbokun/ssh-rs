@@ -154,7 +154,7 @@ pub mod algorithms {
 
     /// pubkey hash algorithm
     pub(crate) mod pubkey {
-        pub const SSH_ED25519: &str = "ssh-ed25519";
+        // pub const SSH_ED25519: &str = "ssh-ed25519";
         #[cfg(feature = "dangerous-rsa-sha1")]
         pub const SSH_RSA: &str = "ssh-rsa";
         pub const RSA_SHA2_256: &str = "rsa-sha2-256";

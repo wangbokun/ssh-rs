@@ -36,7 +36,7 @@ impl Kex {
 }
 
 pub enum PubKey {
-    SshEd25519,
+    // SshEd25519,
     #[cfg(feature = "dangerous-rsa-sha1")]
     SshRsa,
     RsaSha2_256,
@@ -45,7 +45,7 @@ pub enum PubKey {
 impl PubKey {
     pub(crate) fn as_str(&self) -> &'static str {
         match self {
-            PubKey::SshEd25519 => constant::pubkey::SSH_ED25519,
+            // PubKey::SshEd25519 => constant::pubkey::SSH_ED25519,
             #[cfg(feature = "dangerous-rsa-sha1")]
             PubKey::SshRsa => constant::pubkey::SSH_RSA,
             PubKey::RsaSha2_256 => constant::pubkey::RSA_SHA2_256,
